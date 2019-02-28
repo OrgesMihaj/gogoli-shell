@@ -1,0 +1,3 @@
+/home/oooos/code/projects/gogoli-shell/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/oooos/code/projects/gogoli-shell/cmake-build-debug/CMakeFiles/gogoli_shell.dir
+/home/oooos/code/projects/gogoli-shell/cmake-build-debug/CMakeFiles/edit_cache.dir

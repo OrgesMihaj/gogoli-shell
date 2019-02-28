@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/gogoli_shell.dir/main.c.o  -o gogoli_shell 
