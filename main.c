@@ -5,6 +5,25 @@
 #include <stdio.h>
 #include <string.h>
 
+
+// Built-in functions
+
+int changeDirectory(char ** args) {
+    if (args[1] == NULL) {
+        fprintf(stderr, "Expected argument to \"cd\"\n");
+    } else {
+        chdir(args[1]);
+    }
+
+    return 1;
+}
+
+int terminateShell(char ** args) {
+    return 0;
+}
+
+// Core functions
+
 /*
  * Read user input.
  *
@@ -86,6 +105,7 @@ char ** getArguments(char * line) {
     return tokens;
 }
 
+
 /*
  * Responsible for launching a program.
  *
@@ -140,6 +160,37 @@ int processLaunch(char ** args) {
 
 
 
+/*
+ * Program execution function.
+ *
+ * 1. Array of built-in functions.
+ *
+ * 2. Check if the command provided by the user match one of
+ *    the built-in functions.
+*
+*  3. Execute the built-in function.
+ *
+ * 4. If the user is not asking for a built-in function,
+ *    call `processLaunch` function.
+ * */
+int execute(char ** args) {
+
+    char * builtInCommandsName[2] = { "cd", "exit" };
+
+    int (* builtInCommandsFunctions[]) (char **) = { /* [1] */
+        &changeDirectory, &terminateShell
+    };
+
+    for (int i = 0; i < 2; ++i) {
+        if (strcmp(args[0], builtInCommandsName[i]) == 0) { /* [2] */
+            return (*builtInCommandsFunctions[i])(args); /* [3] */
+        }
+    }
+
+    return processLaunch(args); /* [4] */
+}
+
+
 void bootstrap() {
     char * line;
     char ** args;
@@ -150,12 +201,12 @@ void bootstrap() {
 
         line = readCommand();
         args = getArguments(line);
-        status = processLaunch(args);
+        status = execute(args);
 
         free(line);
         free(args);
 
-    } while (status);
+    } while (status != 0);
 }
 
 int main(int argc, char** argv) {
