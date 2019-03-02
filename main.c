@@ -86,25 +86,52 @@ char ** getArguments(char * line) {
     return tokens;
 }
 
-
-int processLaunch(char **args) {
-    pid_t pid, wpid;
+/*
+ * Responsible for launching a program.
+ *
+ * 1. Signed integer type which is capable of representing a process ID.
+ *    gnu.org/software/libc/manual/html_node/Process-Identification.html
+ *
+ * 2. Creates a new process (child process).
+ *
+ *    +value: creation of a child process was unsuccessful.
+ *         0: returned to the newly created child process.
+ *    -value: returned to parent or caller. value = ID of newly created
+ *            child process.
+ *
+ *  3. Load and execute the file that contains the command.
+ *
+ *  4. Can't fork, error occured.
+ *
+ *  5. Wait for state changes in a child of the calling process, and
+ *     obtain information about the child whose state has changed.
+ *
+ *     WUNTRACED: return if a child has stopped
+ *     WIFEXITED: returns true if the child terminated normally
+ *     WIFSIGNALED: returns true if the child process was terminated
+ *                  by a signal.
+ *
+ *     linux.die.net/man/2/waitpid
+ * */
+int processLaunch(char ** args) {
+    pid_t pid; /* [1] */
     int status;
 
-    pid = fork();
+    pid = fork(); /* [2] */
+
     if (pid == 0) {
-        // Child process
-        if (execvp(args[0], args) == -1) {
-            perror("lsh");
-        }
+        execvp(args[0], args); /* [3] */
+
         exit(EXIT_FAILURE);
     } else if (pid < 0) {
-        // Error forking
-        perror("lsh");
+        perror("gogoli"); /* [4] */
     } else {
-        // Parent process
+
+        // Continue until the child process is terminated normally
+        // or the child process was terminated by a signal.
         do {
-            wpid = waitpid(pid, &status, WUNTRACED);
+            waitpid(pid, &status, WUNTRACED); /* [5] */
+
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
