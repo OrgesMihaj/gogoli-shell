@@ -12,9 +12,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dcb1bec0-b98a-4949-aa82-eae4d17366e1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/gogoli_shell.dir/main.c.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/gogoli_shell" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/gogoli_shell" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -35,17 +32,22 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="534">
-              <caret line="173" column="37" selection-start-line="173" selection-start-column="37" selection-end-line="173" selection-end-column="37" />
+            <state relative-caret-position="507">
+              <caret line="222" column="1" lean-forward="true" selection-start-line="222" selection-start-column="1" selection-end-line="222" selection-end-column="1" />
               <folding>
                 <element signature="e#1#22#0" expanded="true" />
                 <element signature="e#104#323#0" />
                 <element signature="e#308#337#0" />
+                <element signature="e#207#602#0" />
                 <element signature="e#207#769#0" />
                 <element signature="e#772#1257#0" />
                 <element signature="e#668#1970#0" />
                 <element signature="e#2073#2081#0" />
                 <element signature="e#2073#3064#0" />
+                <element signature="e#3870#3878#0" />
+                <element signature="e#3870#4329#0" />
+                <element signature="e#4608#4620#0" />
+                <element signature="e#4608#4938#0" />
               </folding>
             </state>
           </provider>
@@ -123,12 +125,12 @@
       <updated>1551381875594</updated>
       <workItem from="1551381890562" duration="3963000" />
       <workItem from="1551439926394" duration="5868000" />
-      <workItem from="1551519869184" duration="16687000" />
+      <workItem from="1551519869184" duration="17463000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26518000" />
+    <option name="totallyTimeSpent" value="27294000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1600" height="873" extended-state="6" />
@@ -179,17 +181,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="534">
-          <caret line="173" column="37" selection-start-line="173" selection-start-column="37" selection-end-line="173" selection-end-column="37" />
+        <state relative-caret-position="507">
+          <caret line="222" column="1" lean-forward="true" selection-start-line="222" selection-start-column="1" selection-end-line="222" selection-end-column="1" />
           <folding>
             <element signature="e#1#22#0" expanded="true" />
             <element signature="e#104#323#0" />
             <element signature="e#308#337#0" />
+            <element signature="e#207#602#0" />
             <element signature="e#207#769#0" />
             <element signature="e#772#1257#0" />
             <element signature="e#668#1970#0" />
             <element signature="e#2073#2081#0" />
             <element signature="e#2073#3064#0" />
+            <element signature="e#3870#3878#0" />
+            <element signature="e#3870#4329#0" />
+            <element signature="e#4608#4620#0" />
+            <element signature="e#4608#4938#0" />
           </folding>
         </state>
       </provider>

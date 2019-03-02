@@ -159,7 +159,6 @@ int processLaunch(char ** args) {
 }
 
 
-
 /*
  * Program execution function.
  *
@@ -191,27 +190,34 @@ int execute(char ** args) {
 }
 
 
+/*
+ * Retrieve user command and execute it.
+ *
+ * 1. Deallocates the memory previously allocated.
+ *
+ * */
 void bootstrap() {
-    char * line;
+    char  * line;
     char ** args;
-    int status;
+    int   status;
 
     do {
         printf("gogoli# ");
 
-        line = readCommand();
-        args = getArguments(line);
+        // three musketeers :)
+        line   = readCommand();
+        args   = getArguments(line);
         status = execute(args);
 
-        free(line);
-        free(args);
+        free(line); /* [1] */
+        free(args); /* [1] */
 
-    } while (status != 0);
+    } while (status);
 }
 
 int main(int argc, char** argv) {
-
-    bootstrap();
+    /**  The beginning is the most important part of the work. */
+    /**/ bootstrap();
 
     return 0;
 }
