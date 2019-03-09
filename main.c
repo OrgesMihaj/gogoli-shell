@@ -1,10 +1,10 @@
-
-#include <sys/wait.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <sys/wait.h>
 
 // Built-in functions
 
@@ -22,7 +22,34 @@ int terminateShell(char ** args) {
     return 0;
 }
 
-// Core functions
+/*
+ * Check if the command is running in background
+ *
+ * */
+bool isBackgroundProcess(char ** args){
+    int i = 0;
+
+    while (args[i] != NULL){
+        if (strcmp( args[i],"&")==0) return true;
+
+        i++;
+    }
+    return false;
+}
+
+/*
+ * Print the absolute pathname of the current working directory
+ *
+ * */
+void printPrompt() {
+    char pathname[1024];
+
+    if (getcwd(pathname, sizeof(pathname)) != NULL) {
+        printf("Gogoli(%s)> ", pathname);
+    } else{
+        printf("WhereAmI> ");
+    }
+}
 
 /*
  * Read user input.
@@ -48,7 +75,6 @@ char * readCommand() {
 
     return line;
 }
-
 
 /*
  * Parse user command into a list of arguments.
@@ -77,7 +103,7 @@ char * readCommand() {
  * */
 char ** getArguments(char * line) {
 
-    int bufferSize = 64;
+    int bufferSize = 1024;
     int position   = 0;
     char * delimiters = " \t\r\n\a";
 
@@ -97,7 +123,37 @@ char ** getArguments(char * line) {
             tokens = realloc(tokens, bufferSize * sizeof(char *)); /* [5] */
         }
 
+
         token = strtok(NULL, delimiters); /* [3] */
+
+    }
+
+    tokens[position] = NULL;
+
+    return tokens;
+}
+
+char ** getArgumentsByAmpersand(char * line){
+    int bufferSize = 1024;
+    int position   = 0;
+
+    char ** tokens = malloc(bufferSize * sizeof(char *)); /* [1] */
+    char  * token;
+
+    token = strtok_r(line, "&", &line); /* [2] */
+
+    while (token != NULL) { /* [3] */
+
+        tokens[position] = token;  /* [4] */
+        position++;
+
+        if (position >= bufferSize) {
+            bufferSize += bufferSize;
+
+            tokens = realloc(tokens, bufferSize * sizeof(char *)); /* [5] */
+        }
+
+        token = strtok_r(line, "&", &line); /* [3] */
     }
 
     tokens[position] = NULL;
@@ -119,40 +175,42 @@ char ** getArguments(char * line) {
  *    -value: returned to parent or caller. value = ID of newly created
  *            child process.
  *
- *  3. Load and execute the file that contains the command.
+ *  3. In case that the user enters a command followed by ampersand (&),
+ *     remove the ampersand and get the command args.
  *
- *  4. Can't fork, error occured.
+ *  4. Load and execute the file that contains the command.
  *
- *  5. Wait for state changes in a child of the calling process, and
- *     obtain information about the child whose state has changed.
+ *  5. Can't fork, error occured.
  *
- *     WUNTRACED: return if a child has stopped
- *     WIFEXITED: returns true if the child terminated normally
- *     WIFSIGNALED: returns true if the child process was terminated
- *                  by a signal.
- *
- *     linux.die.net/man/2/waitpid
  * */
-int processLaunch(char ** args) {
+int processLaunch(char ** args, char * lineWithAmpersand) {
     pid_t pid; /* [1] */
+
     int status;
 
     pid = fork(); /* [2] */
 
     if (pid == 0) {
-        execvp(args[0], args); /* [3] */
+
+        if (isBackgroundProcess(args)) {
+            char ** getCommandWithoutAmpersand = getArgumentsByAmpersand(lineWithAmpersand); /* [3] */
+            char ** newArgs = getArguments(getCommandWithoutAmpersand[0]); /* [3] */
+
+            execvp(newArgs[0], newArgs);
+        } else{
+            execvp(args[0], args); /* [4] */
+        }
 
         exit(EXIT_FAILURE);
     } else if (pid < 0) {
-        perror("gogoli"); /* [4] */
+        perror("gogoli"); /* [5] */
     } else {
 
-        // Continue until the child process is terminated normally
-        // or the child process was terminated by a signal.
-        do {
-            waitpid(pid, &status, WUNTRACED); /* [5] */
-
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+        if (isBackgroundProcess(args)) {
+            waitpid(-1, &status, WNOHANG);
+        } else {
+            wait(NULL);
+        }
     }
 
     return 1;
@@ -172,12 +230,12 @@ int processLaunch(char ** args) {
  * 4. If the user is not asking for a built-in function,
  *    call `processLaunch` function.
  * */
-int execute(char ** args) {
+int execute(char ** args, char * lineWithAmpersand) {
 
     char * builtInCommandsName[2] = { "cd", "exit" };
 
     int (* builtInCommandsFunctions[]) (char **) = { /* [1] */
-        &changeDirectory, &terminateShell
+            &changeDirectory, &terminateShell
     };
 
     for (int i = 0; i < 2; ++i) {
@@ -186,31 +244,32 @@ int execute(char ** args) {
         }
     }
 
-    return processLaunch(args); /* [4] */
+    return processLaunch(args, lineWithAmpersand); /* [4] */
 }
-
 
 /*
  * Retrieve user command and execute it.
  *
- * 1. Deallocates the memory previously allocated.
+ * 1. Deallocate the memory previously allocated.
  *
  * */
 void bootstrap() {
-    char  * line;
+    char * command;
     char ** args;
-    int   status;
+    char commandWithArgs[256];
+
+    int status;
 
     do {
-        printf("gogoli# ");
+        printPrompt();
 
-        // three musketeers :)
-        line   = readCommand();
-        args   = getArguments(line);
-        status = execute(args);
+        command = readCommand();
+        strcpy(commandWithArgs, command);
+        args   = getArguments(command);
+        status = execute(args, commandWithArgs);
 
-        free(line); /* [1] */
-        free(args); /* [1] */
+        free(command); /* [1] */
+        free(args);    /* [1] */
 
     } while (status);
 }

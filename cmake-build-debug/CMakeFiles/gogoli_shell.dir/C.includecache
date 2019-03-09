@@ -7,14 +7,18 @@
 #IncludeRegexTransform: 
 
 /home/oooos/code/projects/gogoli-shell/main.c
-sys/wait.h
+ctype.h
+-
+string.h
+-
+stdio.h
+-
+stdbool.h
 -
 unistd.h
 -
 stdlib.h
 -
-stdio.h
--
-string.h
+sys/wait.h
 -
 
